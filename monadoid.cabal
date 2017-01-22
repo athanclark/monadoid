@@ -16,6 +16,8 @@ Library
   Exposed-Modules:      Data.Monadoid
   Build-Depends:        base >= 4.6 && < 5
                       , mtl
+                      , monad-control
+                      , transformers-base
 
 Source-Repository head
   Type:                 git

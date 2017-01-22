@@ -4,6 +4,7 @@
   , DeriveTraversable
   , DeriveGeneric
   , DeriveDataTypeable
+  , TypeFamilies
   #-}
 
 {-|
@@ -30,17 +31,34 @@ import Control.Monad.Error.Class (MonadError)
 import Control.Monad.Cont.Class (MonadCont)
 import Control.Monad.RWS.Class (MonadRWS)
 import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Base (MonadBase)
+
+import Control.Monad.Trans.Control ( MonadTransControl (liftWith, restoreT), StT
+                                   -- , MonadBaseControl (liftBaseWith, restoreM), StM
+                                   )
 
 
 
 newtype Monadoid m a = Monadoid {runMonadoid :: m a}
   deriving ( Show, Eq, Ord, Functor, Applicative, Monad, Foldable, Traversable, Generic, Data, Typeable
-           , MonadReader r, MonadWriter w, MonadState s, MonadRWS r w s, MonadError e, MonadCont
+           , MonadReader r, MonadWriter w, MonadState s, MonadRWS r w s, MonadError e, MonadIO, MonadBase b
+           , MonadCont
            )
 
 
 instance MonadTrans Monadoid where
   lift = Monadoid
+
+instance MonadTransControl Monadoid where
+  type StT Monadoid a = a
+  liftWith withRun = lift $ withRun runMonadoid
+  restoreT = lift
+
+-- instance (MonadBase b m, MonadBaseControl b m) => MonadBaseControl b (Monadoid m) where
+--   type StM (Monadoid m) a = StM m a
+--   liftBaseWith withRunBase = lift $ liftBaseWith $ \runLower -> withRunBase $ runLower . runMonadoid
+--   restoreM = lift . restoreM
+-- deriving instance MonadBaseControl b (Monadoid m)
 
 
 -- | The only important instance
