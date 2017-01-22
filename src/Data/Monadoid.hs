@@ -27,6 +27,7 @@ newtype Monadoid m a = Monadoid {runMonadoid :: m a}
   deriving (Show, Eq, Ord, Functor, Applicative, Monad, Foldable, Traversable, Generic, Data, Typeable)
 
 
+-- | The only important instance
 instance (Monad m, Monoid a) => Monoid (Monadoid m a) where
   mappend x y = do
     x' <- x
