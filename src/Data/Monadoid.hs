@@ -22,9 +22,25 @@ module Data.Monadoid where
 import GHC.Generics (Generic)
 import Data.Data (Data, Typeable)
 
+import Control.Monad.Trans (MonadTrans (lift))
+import Control.Monad.Reader.Class (MonadReader)
+import Control.Monad.State.Class (MonadState)
+import Control.Monad.Writer.Class (MonadWriter)
+import Control.Monad.Error.Class (MonadError)
+import Control.Monad.Cont.Class (MonadCont)
+import Control.Monad.RWS.Class (MonadRWS)
+import Control.Monad.IO.Class (MonadIO)
+
+
 
 newtype Monadoid m a = Monadoid {runMonadoid :: m a}
-  deriving (Show, Eq, Ord, Functor, Applicative, Monad, Foldable, Traversable, Generic, Data, Typeable)
+  deriving ( Show, Eq, Ord, Functor, Applicative, Monad, Foldable, Traversable, Generic, Data, Typeable
+           , MonadReader r, MonadWriter w, MonadState s, MonadRWS r w s, MonadError e, MonadCont
+           )
+
+
+instance MonadTrans Monadoid where
+  lift = Monadoid
 
 
 -- | The only important instance
