@@ -6,6 +6,17 @@
   , DeriveDataTypeable
   #-}
 
+{-|
+
+Module      : Data.Monadoid
+Copyright   : (c) 2017 Athan Clark
+License     : BSD-3
+Maintainer  : athan.clark@gmail.com
+Stability   : experimental
+Portability : GHC
+
+ -}
+
 module Data.Monadoid where
 
 import GHC.Generics (Generic)
