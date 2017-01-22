@@ -60,6 +60,8 @@ instance MonadTransControl Monadoid where
 --   restoreM = lift . restoreM
 -- deriving instance MonadBaseControl b (Monadoid m)
 
+-- TODO: MonadResource? Other popular ones
+
 
 -- | The only important instance
 instance (Monad m, Monoid a) => Monoid (Monadoid m a) where
