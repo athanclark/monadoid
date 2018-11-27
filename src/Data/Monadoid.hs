@@ -5,6 +5,9 @@
   , DeriveGeneric
   , DeriveDataTypeable
   , TypeFamilies
+  , FlexibleInstances
+  , UndecidableInstances
+  , MultiParamTypeClasses
   #-}
 
 {-|
@@ -34,7 +37,7 @@ import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Base (MonadBase)
 
 import Control.Monad.Trans.Control ( MonadTransControl (liftWith, restoreT), StT
-                                   -- , MonadBaseControl (liftBaseWith, restoreM), StM
+                                   , MonadBaseControl (liftBaseWith, restoreM), StM
                                    )
 
 
@@ -51,22 +54,20 @@ instance MonadTrans Monadoid where
 
 instance MonadTransControl Monadoid where
   type StT Monadoid a = a
-  liftWith withRun = lift $ withRun runMonadoid
+  liftWith withRun = lift (withRun runMonadoid)
   restoreT = lift
 
--- instance (MonadBase b m, MonadBaseControl b m) => MonadBaseControl b (Monadoid m) where
---   type StM (Monadoid m) a = StM m a
---   liftBaseWith withRunBase = lift $ liftBaseWith $ \runLower -> withRunBase $ runLower . runMonadoid
---   restoreM = lift . restoreM
--- deriving instance MonadBaseControl b (Monadoid m)
+instance (MonadBase b m, MonadBaseControl b m) => MonadBaseControl b (Monadoid m) where
+  type StM (Monadoid m) a = StM m a
+  liftBaseWith withRunBase = lift $ liftBaseWith $ \runLower -> withRunBase $ runLower . runMonadoid
+  restoreM = lift . restoreM
 
 -- TODO: MonadResource? Other popular ones
 
 
+instance (Applicative m, Semigroup a) => Semigroup (Monadoid m a) where
+  x <> y = (<>) <$> x <*> y
+
 -- | The only important instance
-instance (Monad m, Monoid a) => Monoid (Monadoid m a) where
-  mappend x y = do
-    x' <- x
-    y' <- y
-    pure (x' `mappend` y')
+instance (Applicative m, Monoid a) => Monoid (Monadoid m a) where
   mempty = pure mempty
